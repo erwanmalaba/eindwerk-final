@@ -1,0 +1,505 @@
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .all-\[unset\] {
+    all: unset;
+  }
+}
+
+:root {
+  --black-white-white: rgba(255, 255, 255, 1);
+  --cyan-400: rgba(34, 211, 238, 1);
+  --cyan-500: rgba(6, 182, 212, 1);
+  --cyan-600: rgba(8, 145, 178, 1);
+  --monochromewhite: rgba(255, 255, 255, 1);
+  --orange-100: rgba(255, 237, 213, 1);
+  --orange-300: rgba(253, 186, 116, 1);
+  --orange-400: rgba(251, 146, 60, 1);
+  --orange-50: rgba(255, 247, 237, 1);
+  --orange-500: rgba(249, 115, 22, 1);
+  --orange-600: rgba(234, 88, 12, 1);
+  --slate-100: rgba(241, 245, 249, 1);
+  --slate-200: rgba(226, 232, 240, 1);
+  --slate-300: rgba(203, 213, 225, 1);
+  --slate-500: rgba(100, 116, 139, 1);
+  --slate-600: rgba(71, 85, 105, 1);
+  --slate-800: rgba(30, 41, 59, 1);
+  --violet-400: rgba(167, 139, 250, 1);
+  --violet-500: rgba(139, 92, 246, 1);
+  --violet-700: rgba(109, 40, 217, 1);
+  --white: rgba(255, 255, 255, 1);
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 210 40% 98%;
+
+    --ring: 215 20.2% 65.1%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --ring: 217.2 32.6% 17.5%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    box-sizing: border-box;
+  }
+
+  html, body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    font-size: 16px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  #root, #app {
+    width: 100%;
+    min-height: 100vh;
+    overflow-x: hidden;
+    max-width: 100vw;
+    @apply bg-background text-foreground;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+}
+
+/* Dark mode specific overrides */
+.dark {
+  /* Main background colors */
+  .bg-slate-100 {
+    @apply bg-slate-900;
+  }
+  
+  .bg-slate-50 {
+    @apply bg-slate-800;
+  }
+  
+  .bg-white {
+    @apply bg-slate-900 border-slate-700;
+  }
+  
+  /* Text colors */
+  .text-slate-800 {
+    @apply text-slate-100;
+  }
+  
+  .text-slate-600 {
+    @apply text-slate-300;
+  }
+  
+  .text-slate-500 {
+    @apply text-slate-400;
+  }
+  
+  /* Border colors */
+  .border-slate-300 {
+    @apply border-slate-600;
+  }
+  
+  .border-slate-200 {
+    @apply border-slate-700;
+  }
+  
+  /* Card backgrounds */
+  .bg-green-50 {
+    @apply bg-green-900/20 border-green-700;
+  }
+  
+  .bg-red-50 {
+    @apply bg-red-900/20 border-red-700;
+  }
+  
+  .bg-blue-50 {
+    @apply bg-blue-900/20 border-blue-700;
+  }
+  
+  .bg-orange-50 {
+    @apply bg-orange-900/20 border-orange-700;
+  }
+  
+  .bg-yellow-50 {
+    @apply bg-yellow-900/20 border-yellow-700;
+  }
+  
+  /* Text colors for colored backgrounds */
+  .text-green-800 {
+    @apply text-green-200;
+  }
+  
+  .text-red-800 {
+    @apply text-red-200;
+  }
+  
+  .text-blue-800 {
+    @apply text-blue-200;
+  }
+  
+  .text-orange-800 {
+    @apply text-orange-200;
+  }
+  
+  .text-yellow-800 {
+    @apply text-yellow-200;
+  }
+  
+  .text-green-700 {
+    @apply text-green-300;
+  }
+  
+  .text-red-700 {
+    @apply text-red-300;
+  }
+  
+  .text-blue-700 {
+    @apply text-blue-300;
+  }
+  
+  .text-orange-700 {
+    @apply text-orange-300;
+  }
+  
+  .text-yellow-700 {
+    @apply text-yellow-300;
+  }
+  
+  /* Hover states */
+  .hover\:bg-slate-100:hover {
+    @apply bg-slate-800;
+  }
+  
+  .hover\:bg-slate-50:hover {
+    @apply bg-slate-700;
+  }
+  
+  .hover\:text-slate-800:hover {
+    @apply text-slate-200;
+  }
+  
+  .hover\:text-slate-700:hover {
+    @apply text-slate-300;
+  }
+  
+  /* Input and form elements */
+  input, textarea, select {
+    @apply bg-slate-800 border-slate-600 text-slate-100;
+  }
+  
+  input:focus, textarea:focus, select:focus {
+    @apply border-orange-500;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+  }
+  
+  /* Shadows */
+  .shadow-sm {
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  }
+  
+  .shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  }
+  
+  .shadow-\[0px_4px_22px_\#9f9f9f26\] {
+    box-shadow: 0px 4px 22px rgba(0, 0, 0, 0.3);
+  }
+  
+  .shadow-\[0px_5px_22px_4px_\#00000005\,0px_12px_17px_2px_\#00000008\] {
+    box-shadow: 0px 5px 22px 4px rgba(0, 0, 0, 0.2), 0px 12px 17px 2px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Special elements */
+  .bg-\[url\(.*\)\] {
+    filter: brightness(0.8);
+  }
+  
+  /* Scrollbars */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-slate-800;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-600 rounded;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-500;
+  }
+}
+
+/* Custom ring utilities for focus states */
+@layer utilities {
+  .ring-orange-500-20 {
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+  }
+  
+  .focus\:ring-orange-500-20:focus {
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+  }
+}
+
+/* Mobile-first responsive design */
+@media screen and (max-width: 640px) {
+  html {
+    font-size: 16px !important;
+  }
+  
+  body {
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+  }
+  
+  .container, .grid, .flex {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  
+  .card, .bg-white, [class*="rounded"] {
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  .mobile-spacing {
+    padding: 0.75rem;
+  }
+  
+  .mobile-container {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+}
+
+/* Tablet optimizations */
+@media screen and (min-width: 641px) and (max-width: 1024px) {
+  .tablet-optimized {
+    font-size: 14px;
+  }
+  
+  .tablet-spacing {
+    padding: 1rem;
+  }
+  
+  .tablet-container {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+}
+
+/* Prevent horizontal scrolling on all devices */
+@media screen and (max-width: 1024px) {
+  body, html, #root, #app {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+  
+  .container, .grid, .flex, .w-full {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  
+  .grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+  
+  .card, [class*="bg-"], [class*="border"] {
+    max-width: 100%;
+    min-width: 0;
+  }
+}
+
+/* Fix for iOS Safari viewport issues */
+@supports (-webkit-touch-callout: none) {
+  .ios-fix {
+    min-height: -webkit-fill-available;
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="date"],
+  input[type="time"],
+  textarea,
+  select {
+    font-size: 16px !important;
+    transform: scale(1);
+  }
+}
+
+/* Responsive text scaling */
+@media screen and (max-width: 480px) {
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.25rem; }
+  h3 { font-size: 1.125rem; }
+  .text-lg { font-size: 1rem; }
+  .text-xl { font-size: 1.125rem; }
+  .text-2xl { font-size: 1.25rem; }
+  .text-3xl { font-size: 1.5rem; }
+}
+
+/* Ensure proper touch targets on mobile */
+@media screen and (max-width: 768px) {
+  button, .cursor-pointer, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .tap-target {
+    padding: 0.75rem;
+  }
+}
+
+/* Fix for grid layouts on mobile */
+@media screen and (max-width: 640px) {
+  .grid-cols-1 { grid-template-columns: 1fr; }
+  .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-cols-3 { grid-template-columns: 1fr; }
+  .grid-cols-4 { grid-template-columns: repeat(2, 1fr); }
+  
+  .xl\:grid-cols-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Responsive spacing utilities */
+.responsive-padding {
+  padding: 0.75rem;
+}
+
+@media screen and (min-width: 640px) {
+  .responsive-padding {
+    padding: 1rem;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .responsive-padding {
+    padding: 1.5rem;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .responsive-padding {
+    padding: 2rem;
+  }
+}
+
+/* Fix for overflow issues in flex containers */
+.flex-container-fix {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.flex-item-fix {
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+/* Ensure images are responsive */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Fix for table responsiveness */
+@media screen and (max-width: 768px) {
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  table {
+    min-width: 100%;
+    font-size: 0.875rem;
+  }
+}
+
+/* Dark mode transitions */
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* Loading indicator dark mode support */
+.dark #app-loading {
+  background: #0f172a !important;
+}
+
+.dark #app-loading h1 {
+  color: #f97316 !important;
+}
+
+.dark #app-loading p {
+  color: #94a3b8 !important;
+}

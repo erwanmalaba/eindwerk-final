@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Fitness Buddy - Your Personal Workout Companion</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
+    <meta name="description" content="Track your workouts, set goals, schedule activities, and monitor your fitness progress with our comprehensive fitness tracking app." />
+    <meta name="keywords" content="fitness, workout, tracker, goals, exercise, health, progress" />
+    <meta name="author" content="Fitness Buddy Team" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png" />
+    
+    <!-- Fonts -->
+    <style>
+      @import url("https://fonts.googleapis.com/css?family=Manrope:800,600,500,400,700&display=swap");
+    </style>
+    
+    <!-- Stylesheets -->
+    <link href="tailwind.css" rel="stylesheet" />
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/icons/icon-192x192.png" as="image" />
+    
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Fitness Buddy - Your Personal Workout Companion" />
+    <meta property="og:description" content="Track your workouts, set goals, schedule activities, and monitor your fitness progress." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/icons/icon-512x512.png" />
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Fitness Buddy" />
+    <meta name="twitter:description" content="Your personal workout companion for tracking fitness progress." />
+    <meta name="twitter:image" content="/icons/icon-512x512.png" />
+    
+    <style>
+      /* Critical CSS for proper mobile rendering */
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        font-size: 16px;
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+      }
+      
+      #app {
+        width: 100%;
+        min-height: 100vh;
+        max-width: 100vw;
+        overflow-x: hidden;
+      }
+      
+      /* Ensure proper box-sizing */
+      *, *::before, *::after {
+        box-sizing: border-box;
+      }
+      
+      /* Prevent horizontal scrolling on all devices */
+      body {
+        overflow-x: hidden;
+        position: relative;
+      }
+      
+      /* Mobile-specific optimizations */
+      @media screen and (max-width: 768px) {
+        body {
+          font-size: 16px;
+          line-height: 1.5;
+        }
+        
+        /* Ensure touch targets are large enough */
+        button, input, select, textarea {
+          min-height: 44px;
+        }
+        
+        /* Prevent zoom on form inputs */
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"],
+        input[type="date"],
+        input[type="time"],
+        textarea,
+        select {
+          font-size: 16px !important;
+        }
+      }
+      
+      /* Tablet optimizations */
+      @media screen and (min-width: 768px) and (max-width: 1024px) {
+        body {
+          font-size: 14px;
+        }
+      }
+      
+      /* iOS Safari specific fixes */
+      @supports (-webkit-touch-callout: none) {
+        body {
+          -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Fix for iOS Safari viewport */
+        #app {
+          min-height: -webkit-fill-available;
+        }
+      }
+      
+      /* Prevent pinch zoom but allow accessibility zoom */
+      @media screen and (max-width: 768px) {
+        html {
+          touch-action: manipulation;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    
+    <script>
+      // Enhanced mobile optimizations
+      document.addEventListener('DOMContentLoaded', function() {
+        // Prevent zoom on iOS Safari for gestures
+        document.addEventListener('gesturestart', function (e) {
+          e.preventDefault();
+        });
+        
+        // Handle orientation changes on tablets and mobile
+        window.addEventListener('orientationchange', function() {
+          setTimeout(function() {
+            // Force a reflow to fix layout issues
+            document.body.style.height = '100.1%';
+            setTimeout(function() {
+              document.body.style.height = '100%';
+            }, 10);
+          }, 100);
+        });
+        
+        // Prevent horizontal scrolling from touch gestures
+        let startX = 0;
+        document.addEventListener('touchstart', function(e) {
+          startX = e.touches[0].clientX;
+        }, { passive: true });
+        
+        document.addEventListener('touchmove', function(e) {
+          if (e.touches.length > 1) {
+            e.preventDefault();
+            return;
+          }
+          
+          const currentX = e.touches[0].clientX;
+          const diffX = Math.abs(currentX - startX);
+          
+          // Prevent horizontal scrolling if it's a horizontal swipe
+          if (diffX > 10 && window.innerWidth <= 768) {
+            const scrollLeft = document.documentElement.scrollLeft || document.body.scrollLeft;
+            if (scrollLeft === 0 && currentX > startX) {
+              e.preventDefault();
+            }
+          }
+        }, { passive: false });
+        
+        // Fix viewport height on mobile browsers
+        function setViewportHeight() {
+          const vh = window.innerHeight * 0.01;
+          document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+        
+        setViewportHeight();
+        window.addEventListener('resize', setViewportHeight);
+        window.addEventListener('orientationchange', function() {
+          setTimeout(setViewportHeight, 100);
+        });
+      });
+
+      // Add loading indicator with proper mobile styling
+      const loadingHTML = `
+        <div style="
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background: #f1f5f9;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          font-family: 'Manrope', sans-serif;
+          z-index: 9999;
+          overflow: hidden;
+          padding: 20px;
+          box-sizing: border-box;
+        " id="app-loading">
+          <div style="
+            width: 60px;
+            height: 60px;
+            border: 4px solid #fed7aa;
+            border-top: 4px solid #f97316;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+          "></div>
+          <h1 style="
+            color: #f97316;
+            font-size: clamp(20px, 5vw, 24px);
+            font-weight: 800;
+            margin-bottom: 8px;
+            text-align: center;
+            max-width: 100%;
+          ">Fitness Buddy</h1>
+          <p style="
+            color: #64748b;
+            font-size: clamp(12px, 3vw, 14px);
+            text-align: center;
+            max-width: 100%;
+            line-height: 1.4;
+          ">Loading your fitness dashboard...</p>
+        </div>
+        <style>
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        </style>
+      `;
+      
+      document.getElementById('app').innerHTML = loadingHTML;
+      
+      // Remove loading indicator when app loads
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const loading = document.getElementById('app-loading');
+          if (loading) {
+            loading.style.opacity = '0';
+            loading.style.transition = 'opacity 0.3s ease';
+            setTimeout(() => loading.remove(), 300);
+          }
+        }, 1000);
+      });
+    </script>
+    
+    <!-- Main App Script -->
+    <script type="module" src="./src/index.tsx"></script>
+  </body>
+</html>
