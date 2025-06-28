@@ -50,7 +50,7 @@ export const Header = ({ onMenuToggle }: HeaderProps): JSX.Element => {
           {greeting}
         </span>
         <h1 className="text-foreground text-sm sm:text-base font-semibold font-['Manrope',Helvetica] truncate">
-          Welcome Back{profile?.first_name ? `, ${profile.first_name}` : ''}!
+          Welcome Back{profile?.first_name ? `, ${profile.first_name}` : ""}!
         </h1>
       </div>
 
@@ -63,9 +63,9 @@ export const Header = ({ onMenuToggle }: HeaderProps): JSX.Element => {
         </Link>
         <Link to="/profile">
           <Avatar className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 border border-border cursor-pointer hover:border-muted-foreground transition-colors flex-shrink-0">
-            <AvatarImage 
-              src={profile?.avatar_url || "..//avatar-w--photo.png"} 
-              alt="User avatar" 
+            <AvatarImage
+              src={profile?.avatar_url || "..//avatar-w--photo.png"}
+              alt="User avatar"
             />
           </Avatar>
         </Link>

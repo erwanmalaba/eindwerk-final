@@ -1,10 +1,19 @@
-import { FaChevronRight, FaDumbbell, FaCheckCircle, FaPlus } from "react-icons/fa";
+import {
+  FaChevronRight,
+  FaDumbbell,
+  FaCheckCircle,
+  FaPlus,
+} from "react-icons/fa";
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../lib/supabase";
 import { Badge } from "../components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import { DivWrapperByAnima } from "../screens/Fitness/sections/DivWrapperByAnima";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { Link } from "react-router-dom";
 
 interface WorkoutData {
@@ -54,7 +63,7 @@ export const Overview = (): JSX.Element => {
     completionRate: 0,
     thisWeekAdded: 0,
     thisWeekCompleted: 0,
-    weeklyCompletionRate: 0
+    weeklyCompletionRate: 0,
   });
   const [scheduleItems, setScheduleItems] = useState<ScheduleItem[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
@@ -72,10 +81,10 @@ export const Overview = (): JSX.Element => {
       await Promise.all([
         fetchWorkoutData(),
         fetchScheduleItems(),
-        fetchGoals()
+        fetchGoals(),
       ]);
     } catch (error) {
-      console.error('❌ Overview: Data fetch error:', error);
+      console.error("❌ Overview: Data fetch error:", error);
     } finally {
       setLoading(false);
     }
@@ -85,68 +94,78 @@ export const Overview = (): JSX.Element => {
     try {
       // Get all workouts for the user
       const { data: allWorkouts, error: allWorkoutsError } = await supabase
-        .from('workouts')
-        .select('id, name, date, completed, created_at')
-        .eq('user_id', user?.id)
-        .order('date', { ascending: true });
+        .from("workouts")
+        .select("id, name, date, completed, created_at")
+        .eq("user_id", user?.id)
+        .order("date", { ascending: true });
 
       if (allWorkoutsError) {
-        console.error('❌ Overview: Workouts fetch error:', allWorkoutsError.message);
+        console.error(
+          "❌ Overview: Workouts fetch error:",
+          allWorkoutsError.message
+        );
         return;
       }
 
       const workouts = allWorkouts || [];
-      
+
       // Calculate overall workout statistics
       const totalWorkouts = workouts.length;
-      const completedWorkouts = workouts.filter(w => w.completed).length;
-      const completionRate = totalWorkouts > 0 ? Math.round((completedWorkouts / totalWorkouts) * 100) : 0;
+      const completedWorkouts = workouts.filter((w) => w.completed).length;
+      const completionRate =
+        totalWorkouts > 0
+          ? Math.round((completedWorkouts / totalWorkouts) * 100)
+          : 0;
 
       // Get workouts from the last 7 days for weekly stats
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
-      const sevenDaysAgoStr = sevenDaysAgo.toISOString().split('T')[0];
-      
-      const weeklyWorkouts = workouts.filter(w => w.date >= sevenDaysAgoStr);
+      const sevenDaysAgoStr = sevenDaysAgo.toISOString().split("T")[0];
+
+      const weeklyWorkouts = workouts.filter((w) => w.date >= sevenDaysAgoStr);
       const thisWeekAdded = weeklyWorkouts.length;
-      const thisWeekCompleted = weeklyWorkouts.filter(w => w.completed).length;
-      const weeklyCompletionRate = thisWeekAdded > 0 ? Math.round((thisWeekCompleted / thisWeekAdded) * 100) : 0;
+      const thisWeekCompleted = weeklyWorkouts.filter((w) => w.completed)
+        .length;
+      const weeklyCompletionRate =
+        thisWeekAdded > 0
+          ? Math.round((thisWeekCompleted / thisWeekAdded) * 100)
+          : 0;
 
       // Process data for the last 7 days chart
       const processedData: WorkoutData[] = [];
-      
+
       for (let i = 6; i >= 0; i--) {
         const date = new Date();
         date.setDate(date.getDate() - i);
-        const dateStr = date.toISOString().split('T')[0];
-        
+        const dateStr = date.toISOString().split("T")[0];
+
         // Get workouts for this specific date
-        const dayWorkouts = workouts.filter(w => w.date === dateStr);
+        const dayWorkouts = workouts.filter((w) => w.date === dateStr);
         const added = dayWorkouts.length;
-        const completed = dayWorkouts.filter(w => w.completed).length;
-        
+        const completed = dayWorkouts.filter((w) => w.completed).length;
+
         // Generate day label
         const today = new Date();
         const yesterday = new Date(today);
         yesterday.setDate(yesterday.getDate() - 1);
-        
+
         let dayLabel: string;
         if (date.toDateString() === today.toDateString()) {
-          dayLabel = 'Today';
+          dayLabel = "Today";
         } else if (date.toDateString() === yesterday.toDateString()) {
-          dayLabel = 'Yesterday';
+          dayLabel = "Yesterday";
         } else {
-          dayLabel = date.toLocaleDateString('en-US', { weekday: 'short' });
+          dayLabel = date.toLocaleDateString("en-US", { weekday: "short" });
         }
-        
+
         processedData.push({
           date: dateStr,
           added,
           completed,
-          dayLabel
+          dayLabel,
         });
       }
-      
+
       setWorkoutData(processedData);
       setWorkoutStats({
         totalWorkouts,
@@ -154,11 +173,10 @@ export const Overview = (): JSX.Element => {
         completionRate,
         thisWeekAdded,
         thisWeekCompleted,
-        weeklyCompletionRate
+        weeklyCompletionRate,
       });
-      
     } catch (error) {
-      console.error('❌ Overview: Workout data processing error:', error);
+      console.error("❌ Overview: Workout data processing error:", error);
     }
   };
 
@@ -169,58 +187,58 @@ export const Overview = (): JSX.Element => {
       threeDaysFromNow.setDate(today.getDate() + 3);
 
       const { data, error } = await supabase
-        .from('schedule_items')
-        .select('*')
-        .eq('user_id', user?.id)
-        .gte('date', today.toISOString().split('T')[0])
-        .lte('date', threeDaysFromNow.toISOString().split('T')[0])
-        .order('date', { ascending: true })
-        .order('time', { ascending: true })
+        .from("schedule_items")
+        .select("*")
+        .eq("user_id", user?.id)
+        .gte("date", today.toISOString().split("T")[0])
+        .lte("date", threeDaysFromNow.toISOString().split("T")[0])
+        .order("date", { ascending: true })
+        .order("time", { ascending: true })
         .limit(3);
 
       if (error) {
-        console.error('❌ Overview: Schedule fetch error:', error.message);
+        console.error("❌ Overview: Schedule fetch error:", error.message);
         return;
       }
 
       setScheduleItems(data || []);
     } catch (error) {
-      console.error('❌ Overview: Schedule error:', error);
+      console.error("❌ Overview: Schedule error:", error);
     }
   };
 
   const fetchGoals = async () => {
     try {
       const { data, error } = await supabase
-        .from('goals')
-        .select('*')
-        .eq('user_id', user?.id)
-        .eq('completed', false)
-        .order('deadline', { ascending: true })
+        .from("goals")
+        .select("*")
+        .eq("user_id", user?.id)
+        .eq("completed", false)
+        .order("deadline", { ascending: true })
         .limit(3);
 
       if (error) {
-        console.error('❌ Overview: Goals fetch error:', error.message);
+        console.error("❌ Overview: Goals fetch error:", error.message);
         return;
       }
 
       setGoals(data || []);
     } catch (error) {
-      console.error('❌ Overview: Goals error:', error);
+      console.error("❌ Overview: Goals error:", error);
     }
   };
 
   const getMaxValue = () => {
-    const allValues = workoutData.flatMap(d => [d.added, d.completed]);
+    const allValues = workoutData.flatMap((d) => [d.added, d.completed]);
     const maxValue = Math.max(...allValues, 1); // Minimum scale of 1
     return maxValue;
   };
 
   const formatScheduleTime = (time: string) => {
     try {
-      const [hours, minutes] = time.split(':');
+      const [hours, minutes] = time.split(":");
       const hour = parseInt(hours);
-      const ampm = hour >= 12 ? 'PM' : 'AM';
+      const ampm = hour >= 12 ? "PM" : "AM";
       const displayHour = hour % 12 || 12;
       return `${displayHour}:${minutes} ${ampm}`;
     } catch {
@@ -236,11 +254,15 @@ export const Overview = (): JSX.Element => {
       tomorrow.setDate(today.getDate() + 1);
 
       if (scheduleDate.toDateString() === today.toDateString()) {
-        return 'Today';
+        return "Today";
       } else if (scheduleDate.toDateString() === tomorrow.toDateString()) {
-        return 'Tomorrow';
+        return "Tomorrow";
       } else {
-        return scheduleDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+        return scheduleDate.toLocaleDateString("en-US", {
+          weekday: "long",
+          month: "short",
+          day: "numeric",
+        });
       }
     } catch {
       return date;
@@ -310,7 +332,7 @@ export const Overview = (): JSX.Element => {
                 alt="Fitness background"
                 src="/anastasia-hisel-tpivpdqgc20-unsplash-2.png"
                 onError={(e) => {
-                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.style.display = "none";
                 }}
               />
 
@@ -329,7 +351,8 @@ export const Overview = (): JSX.Element => {
                 </h2>
 
                 <p className="font-['Manrope',Helvetica] font-normal text-white text-xs sm:text-sm leading-tight max-w-xs sm:max-w-sm md:max-w-md">
-                  Monitor your workout progress and stay motivated with your fitness journey
+                  Monitor your workout progress and stay motivated with your
+                  fitness journey
                 </p>
               </div>
             </div>
@@ -345,11 +368,15 @@ export const Overview = (): JSX.Element => {
                     <FaDumbbell className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   </div>
                   <div>
-                    <div className="font-bold text-white text-base sm:text-lg">{workoutStats.totalWorkouts}</div>
+                    <div className="font-bold text-white text-base sm:text-lg">
+                      {workoutStats.totalWorkouts}
+                    </div>
                     <div className="text-cyan-100 text-xs">Total</div>
                   </div>
                 </div>
-                <div className="text-cyan-100 text-xs sm:text-sm">All Workouts</div>
+                <div className="text-cyan-100 text-xs sm:text-sm">
+                  All Workouts
+                </div>
               </CardContent>
             </Card>
 
@@ -361,11 +388,15 @@ export const Overview = (): JSX.Element => {
                     <FaCheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   </div>
                   <div>
-                    <div className="font-bold text-white text-base sm:text-lg">{workoutStats.completedWorkouts}</div>
+                    <div className="font-bold text-white text-base sm:text-lg">
+                      {workoutStats.completedWorkouts}
+                    </div>
                     <div className="text-green-100 text-xs">Completed</div>
                   </div>
                 </div>
-                <div className="text-green-100 text-xs sm:text-sm">Finished Workouts</div>
+                <div className="text-green-100 text-xs sm:text-sm">
+                  Finished Workouts
+                </div>
               </CardContent>
             </Card>
 
@@ -374,14 +405,20 @@ export const Overview = (): JSX.Element => {
               <CardContent className="p-3 sm:p-4">
                 <div className="flex items-center gap-2 sm:gap-3 mb-2">
                   <div className="w-8 h-8 sm:w-10 sm:h-10 bg-orange-600 rounded-lg flex items-center justify-center">
-                    <span className="text-white font-bold text-xs sm:text-sm">%</span>
+                    <span className="text-white font-bold text-xs sm:text-sm">
+                      %
+                    </span>
                   </div>
                   <div>
-                    <div className="font-bold text-white text-base sm:text-lg">{workoutStats.completionRate}%</div>
+                    <div className="font-bold text-white text-base sm:text-lg">
+                      {workoutStats.completionRate}%
+                    </div>
                     <div className="text-orange-100 text-xs">Success</div>
                   </div>
                 </div>
-                <div className="text-orange-100 text-xs sm:text-sm">Completion Rate</div>
+                <div className="text-orange-100 text-xs sm:text-sm">
+                  Completion Rate
+                </div>
               </CardContent>
             </Card>
           </section>
@@ -394,7 +431,8 @@ export const Overview = (): JSX.Element => {
                 Weekly Workout Progress
               </CardTitle>
               <p className="text-xs sm:text-sm text-slate-600">
-                Real-time data from your workout page showing added vs completed workouts
+                Real-time data from your workout page showing added vs completed
+                workouts
               </p>
             </CardHeader>
             <CardContent className="pt-0">
@@ -436,35 +474,55 @@ export const Overview = (): JSX.Element => {
                       <div className="flex justify-between items-end h-32 sm:h-48 relative z-10 px-1 sm:px-2">
                         {workoutData.map((data, index) => {
                           const maxVal = getMaxValue();
-                          
+
                           // Calculate heights as percentages of the chart height
-                          const chartHeight = window.innerWidth < 640 ? 120 : 180; // 32*4 or 48*4 (h-32 or h-48 in pixels)
-                          const addedHeight = maxVal > 0 ? Math.max((data.added / maxVal) * chartHeight * 0.9, data.added > 0 ? 6 : 0) : 0;
-                          const completedHeight = maxVal > 0 ? Math.max((data.completed / maxVal) * chartHeight * 0.9, data.completed > 0 ? 6 : 0) : 0;
+                          const chartHeight =
+                            window.innerWidth < 640 ? 120 : 180; // 32*4 or 48*4 (h-32 or h-48 in pixels)
+                          const addedHeight =
+                            maxVal > 0
+                              ? Math.max(
+                                  (data.added / maxVal) * chartHeight * 0.9,
+                                  data.added > 0 ? 6 : 0
+                                )
+                              : 0;
+                          const completedHeight =
+                            maxVal > 0
+                              ? Math.max(
+                                  (data.completed / maxVal) * chartHeight * 0.9,
+                                  data.completed > 0 ? 6 : 0
+                                )
+                              : 0;
 
                           return (
-                            <div key={index} className="flex flex-col items-center gap-2 sm:gap-3">
+                            <div
+                              key={index}
+                              className="flex flex-col items-center gap-2 sm:gap-3"
+                            >
                               {/* Bars container */}
                               <div className="flex items-end gap-0.5 sm:gap-1 h-28 sm:h-44">
                                 {/* Added workouts bar (cyan) */}
                                 <div
                                   className="w-3 sm:w-6 bg-cyan-400 rounded-t transition-all duration-300 hover:bg-cyan-500"
                                   style={{ height: `${addedHeight}px` }}
-                                  title={`Added: ${data.added} workout${data.added !== 1 ? 's' : ''} on ${data.dayLabel}`}
+                                  title={`Added: ${data.added} workout${
+                                    data.added !== 1 ? "s" : ""
+                                  } on ${data.dayLabel}`}
                                 />
                                 {/* Completed workouts bar (green) */}
                                 <div
                                   className="w-3 sm:w-6 bg-green-400 rounded-t transition-all duration-300 hover:bg-green-500"
                                   style={{ height: `${completedHeight}px` }}
-                                  title={`Completed: ${data.completed} workout${data.completed !== 1 ? 's' : ''} on ${data.dayLabel}`}
+                                  title={`Completed: ${data.completed} workout${
+                                    data.completed !== 1 ? "s" : ""
+                                  } on ${data.dayLabel}`}
                                 />
                               </div>
-                              
+
                               {/* Day label */}
                               <div className="text-xs text-slate-500 text-center font-medium">
                                 {data.dayLabel}
                               </div>
-                              
+
                               {/* Data values for debugging */}
                               {(data.added > 0 || data.completed > 0) && (
                                 <div className="text-xs text-slate-400 text-center">
@@ -482,11 +540,15 @@ export const Overview = (): JSX.Element => {
                   <div className="flex items-center justify-center gap-4 sm:gap-6">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 sm:w-4 sm:h-4 bg-cyan-400 rounded"></div>
-                      <span className="text-xs sm:text-sm text-slate-600 font-medium">Added Workouts</span>
+                      <span className="text-xs sm:text-sm text-slate-600 font-medium">
+                        Added Workouts
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 sm:w-4 sm:h-4 bg-green-400 rounded"></div>
-                      <span className="text-xs sm:text-sm text-slate-600 font-medium">Completed Workouts</span>
+                      <span className="text-xs sm:text-sm text-slate-600 font-medium">
+                        Completed Workouts
+                      </span>
                     </div>
                   </div>
 
@@ -494,20 +556,36 @@ export const Overview = (): JSX.Element => {
                   <div className="bg-slate-50 rounded-lg p-3 sm:p-4">
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 text-center">
                       <div>
-                        <div className="text-base sm:text-lg font-bold text-slate-800">{workoutStats.thisWeekAdded}</div>
-                        <div className="text-xs sm:text-sm text-slate-600">This Week Added</div>
+                        <div className="text-base sm:text-lg font-bold text-slate-800">
+                          {workoutStats.thisWeekAdded}
+                        </div>
+                        <div className="text-xs sm:text-sm text-slate-600">
+                          This Week Added
+                        </div>
                       </div>
                       <div>
-                        <div className="text-base sm:text-lg font-bold text-slate-800">{workoutStats.thisWeekCompleted}</div>
-                        <div className="text-xs sm:text-sm text-slate-600">This Week Done</div>
+                        <div className="text-base sm:text-lg font-bold text-slate-800">
+                          {workoutStats.thisWeekCompleted}
+                        </div>
+                        <div className="text-xs sm:text-sm text-slate-600">
+                          This Week Done
+                        </div>
                       </div>
                       <div>
-                        <div className="text-base sm:text-lg font-bold text-slate-800">{workoutStats.totalWorkouts}</div>
-                        <div className="text-xs sm:text-sm text-slate-600">Total Ever</div>
+                        <div className="text-base sm:text-lg font-bold text-slate-800">
+                          {workoutStats.totalWorkouts}
+                        </div>
+                        <div className="text-xs sm:text-sm text-slate-600">
+                          Total Ever
+                        </div>
                       </div>
                       <div>
-                        <div className="text-base sm:text-lg font-bold text-slate-800">{workoutStats.weeklyCompletionRate}%</div>
-                        <div className="text-xs sm:text-sm text-slate-600">Weekly Rate</div>
+                        <div className="text-base sm:text-lg font-bold text-slate-800">
+                          {workoutStats.weeklyCompletionRate}%
+                        </div>
+                        <div className="text-xs sm:text-sm text-slate-600">
+                          Weekly Rate
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -516,12 +594,14 @@ export const Overview = (): JSX.Element => {
                   {workoutStats.totalWorkouts === 0 && (
                     <div className="text-center py-6 sm:py-8 bg-orange-50 rounded-lg border border-orange-200">
                       <FaDumbbell className="w-10 h-10 sm:w-12 sm:h-12 text-orange-400 mx-auto mb-3" />
-                      <h3 className="text-base sm:text-lg font-medium text-orange-800 mb-2">No workouts yet</h3>
+                      <h3 className="text-base sm:text-lg font-medium text-orange-800 mb-2">
+                        No workouts yet
+                      </h3>
                       <p className="text-orange-600 text-sm mb-4">
                         Create your first workout to see progress data here
                       </p>
-                      <Link 
-                        to="/workout" 
+                      <Link
+                        to="/workout"
                         className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
                       >
                         <FaPlus className="w-4 h-4" />
@@ -543,7 +623,10 @@ export const Overview = (): JSX.Element => {
               <h2 className="font-bold text-slate-600 text-base sm:text-lg md:text-xl font-['Manrope',Helvetica]">
                 My Schedule
               </h2>
-              <Link to="/schedule" className="flex items-center cursor-pointer hover:opacity-80 transition-opacity">
+              <Link
+                to="/schedule"
+                className="flex items-center cursor-pointer hover:opacity-80 transition-opacity"
+              >
                 <span className="font-medium text-orange-500 text-sm font-['Manrope',Helvetica]">
                   View All
                 </span>
@@ -555,26 +638,33 @@ export const Overview = (): JSX.Element => {
               {loading ? (
                 <div className="text-center py-4 sm:py-6 md:py-8">
                   <div className="animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-b-2 border-orange-500 mx-auto"></div>
-                  <p className="text-slate-500 mt-2 text-xs sm:text-sm">Loading schedule...</p>
+                  <p className="text-slate-500 mt-2 text-xs sm:text-sm">
+                    Loading schedule...
+                  </p>
                 </div>
               ) : scheduleItems.length > 0 ? (
                 scheduleItems.map((item) => (
                   <Card
                     key={item.id}
                     className={`w-full bg-white rounded-lg shadow-[0px_4px_22px_#9f9f9f26] ${
-                      item.completed ? 'bg-green-50 border-green-200' : ''
+                      item.completed ? "bg-green-50 border-green-200" : ""
                     }`}
                   >
                     <CardContent className="p-3 sm:p-4">
                       <div className="flex items-center justify-between w-full">
                         <div className="flex flex-col items-start gap-1 sm:gap-2 flex-1 min-w-0">
-                          <div className={`font-medium text-slate-800 text-sm tracking-[-0.08px] leading-[14px] font-['Manrope',Helvetica] truncate w-full ${
-                            item.completed ? 'line-through text-green-700' : ''
-                          }`}>
+                          <div
+                            className={`font-medium text-slate-800 text-sm tracking-[-0.08px] leading-[14px] font-['Manrope',Helvetica] truncate w-full ${
+                              item.completed
+                                ? "line-through text-green-700"
+                                : ""
+                            }`}
+                          >
                             {item.title}
                           </div>
                           <div className="font-normal text-slate-600 text-xs tracking-[-0.07px] leading-3 font-['Manrope',Helvetica] truncate w-full">
-                            {formatScheduleDate(item.date)} | {formatScheduleTime(item.time)}
+                            {formatScheduleDate(item.date)} |{" "}
+                            {formatScheduleTime(item.time)}
                           </div>
                         </div>
                         <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 ml-2">
@@ -591,9 +681,11 @@ export const Overview = (): JSX.Element => {
                 ))
               ) : (
                 <div className="text-center py-4 sm:py-6 md:py-8">
-                  <p className="text-slate-500 text-sm mb-3">No upcoming activities</p>
-                  <Link 
-                    to="/schedule" 
+                  <p className="text-slate-500 text-sm mb-3">
+                    No upcoming activities
+                  </p>
+                  <Link
+                    to="/schedule"
                     className="inline-flex items-center gap-2 px-3 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm"
                   >
                     <FaPlus className="w-3 h-3" />
@@ -610,7 +702,10 @@ export const Overview = (): JSX.Element => {
               <h2 className="font-bold text-slate-600 text-base sm:text-lg md:text-xl font-['Manrope',Helvetica]">
                 Goals
               </h2>
-              <Link to="/goals" className="flex items-center cursor-pointer hover:opacity-80 transition-opacity">
+              <Link
+                to="/goals"
+                className="flex items-center cursor-pointer hover:opacity-80 transition-opacity"
+              >
                 <span className="font-medium text-orange-500 text-sm font-['Manrope',Helvetica]">
                   View All
                 </span>
@@ -622,18 +717,24 @@ export const Overview = (): JSX.Element => {
               {loading ? (
                 <div className="text-center py-4 sm:py-6 md:py-8">
                   <div className="animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-b-2 border-orange-500 mx-auto"></div>
-                  <p className="text-slate-500 mt-2 text-xs sm:text-sm">Loading goals...</p>
+                  <p className="text-slate-500 mt-2 text-xs sm:text-sm">
+                    Loading goals...
+                  </p>
                 </div>
               ) : goals.length > 0 ? (
                 goals.map((goal) => {
-                  const progress = getProgressPercentage(goal.current_value, goal.target_value);
-                  const isOverdue = new Date(goal.deadline) < new Date() && !goal.completed;
-                  
+                  const progress = getProgressPercentage(
+                    goal.current_value,
+                    goal.target_value
+                  );
+                  const isOverdue =
+                    new Date(goal.deadline) < new Date() && !goal.completed;
+
                   return (
                     <Card
                       key={goal.id}
                       className={`w-full bg-white rounded-lg shadow-[0px_4px_22px_#9f9f9f26] ${
-                        isOverdue ? 'border-red-200 bg-red-50' : ''
+                        isOverdue ? "border-red-200 bg-red-50" : ""
                       }`}
                     >
                       <CardContent className="p-3 sm:p-4">
@@ -643,27 +744,32 @@ export const Overview = (): JSX.Element => {
                               {goal.title}
                             </div>
                             <div className="font-normal text-slate-600 text-xs tracking-[-0.07px] leading-3 font-['Manrope',Helvetica] truncate w-full">
-                              Due: {new Date(goal.deadline).toLocaleDateString()}
+                              Due:{" "}
+                              {new Date(goal.deadline).toLocaleDateString()}
                             </div>
                           </div>
                           <Badge className={getCategoryColor(goal.category)}>
                             {goal.category}
                           </Badge>
                         </div>
-                        
+
                         {/* Progress bar */}
                         <div className="space-y-1">
                           <div className="flex justify-between text-xs">
                             <span className="text-slate-600">Progress</span>
                             <span className="font-medium text-slate-800">
-                              {goal.current_value} / {goal.target_value} {goal.unit}
+                              {goal.current_value} / {goal.target_value}{" "}
+                              {goal.unit}
                             </span>
                           </div>
                           <div className="w-full bg-slate-200 rounded-full h-1.5">
                             <div
                               className={`h-1.5 rounded-full transition-all duration-300 ${
-                                progress >= 100 ? 'bg-green-500' : 
-                                progress >= 75 ? 'bg-orange-500' : 'bg-cyan-500'
+                                progress >= 100
+                                  ? "bg-green-500"
+                                  : progress >= 75
+                                  ? "bg-orange-500"
+                                  : "bg-cyan-500"
                               }`}
                               style={{ width: `${Math.min(progress, 100)}%` }}
                             />
@@ -685,8 +791,8 @@ export const Overview = (): JSX.Element => {
               ) : (
                 <div className="text-center py-4 sm:py-6 md:py-8">
                   <p className="text-slate-500 text-sm mb-3">No active goals</p>
-                  <Link 
-                    to="/goals" 
+                  <Link
+                    to="/goals"
                     className="inline-flex items-center gap-2 px-3 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm"
                   >
                     <FaPlus className="w-3 h-3" />
